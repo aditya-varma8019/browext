@@ -1,22 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Object Detection</title>
-    <style>
-      body {
-        width: 300px;
-        padding: 10px;
-      }
-      button {
-        margin-bottom: 10px;
-      }
-      #result {
-        max-height: 400px;
-        overflow-y: auto;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <h1>Object Detection</h1>
+    <p>
+      Please select a screenshot from your Downloads folder or recent files.
+    </p>
+    <input type="file" id="uploadImage" accept="popup" />
     <button id="detectObjects">Detect Objects</button>
     <div id="result"></div>
     <script src="popup.js"></script>

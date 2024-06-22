@@ -5,7 +5,6 @@ import cv2
 import base64
 from io import BytesIO
 from PIL import Image
-import pyautogui
 from sklearn.cluster import KMeans
 
 app = Flask(__name__)
@@ -134,20 +133,11 @@ def preprocess_image(image_rgb):
 
 
 def get_dominant_color(image):
-    # Reshape the image to be a list of pixels
     pixels = image.reshape(-1, 3)
-
-    # Perform k-means clustering to find the most common colors
     kmeans = KMeans(n_clusters=5)
     kmeans.fit(pixels)
-
-    # Get the RGB values of the centers
     colors = kmeans.cluster_centers_
-
-    # Convert RGB to HSV for better color naming
     colors_hsv = cv2.cvtColor(np.uint8([colors]), cv2.COLOR_RGB2HSV)[0]
-
-    # Define color ranges in HSV
     color_ranges = {
         "red": ([0, 100, 100], [10, 255, 255]),
         "orange": ([11, 100, 100], [20, 255, 255]),
@@ -161,12 +151,9 @@ def get_dominant_color(image):
         "gray": ([0, 0, 70], [180, 30, 200]),
         "black": ([0, 0, 0], [180, 255, 70]),
     }
-
-    # Find the dominant color
     for color, (lower, upper) in color_ranges.items():
         if np.all(colors_hsv[0] >= lower) and np.all(colors_hsv[0] <= upper):
             return color
-
     return ""
 
 
@@ -194,9 +181,12 @@ def index():
 @app.route("/detect", methods=["POST"])
 def detect():
     try:
-        # Take a screenshot of the entire screen
-        screenshot = pyautogui.screenshot()
-        image_rgb = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
+        if "image" not in request.files:
+            return jsonify({"error": "No image file uploaded"}), 400
+
+        file = request.files["image"]
+        image_data = file.read()
+        image_rgb = load_image(image_data)
         img = preprocess_image(image_rgb)
         detections = detect_objects(img)
 

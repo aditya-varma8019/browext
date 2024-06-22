@@ -1,12 +1,29 @@
 document.addEventListener('DOMContentLoaded', function () {
+    var uploadInput = document.getElementById('uploadImage');
     var detectButton = document.getElementById('detectObjects');
     var resultDiv = document.getElementById('result');
+    var uploadedFile;
+
+    uploadInput.addEventListener('change', function (event) {
+        uploadedFile = event.target.files[0];
+        if (uploadedFile) {
+            resultDiv.textContent = `Selected file: ${uploadedFile.name}`;
+        }
+    });
 
     detectButton.addEventListener('click', function () {
+        if (!uploadedFile) {
+            resultDiv.textContent = 'Please upload an image first.';
+            return;
+        }
+
         resultDiv.textContent = 'Detecting objects...';
+        var formData = new FormData();
+        formData.append('image', uploadedFile);
 
         fetch('http://localhost:5000/detect', {
-            method: 'POST'
+            method: 'POST',
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
@@ -29,14 +46,14 @@ document.addEventListener('DOMContentLoaded', function () {
             var ul = document.createElement('ul');
             objects.forEach(function (obj) {
                 var li = document.createElement('li');
-                var a = document.createElement('a');
                 var img = document.createElement('img');
                 img.src = 'data:image/jpeg;base64,' + obj.image;
-                img.style.width = '100px';  // Set the desired width
-                a.href = obj.amazon_link;
-                a.target = '_blank';
-                a.appendChild(img);
-                li.appendChild(a);
+                img.style.width = '100px'; // Adjust the size as needed
+                img.style.cursor = 'pointer';
+                img.addEventListener('click', function () {
+                    window.open(obj.amazon_link, '_blank');
+                });
+                li.appendChild(img);
                 ul.appendChild(li);
             });
             resultDiv.appendChild(ul);
