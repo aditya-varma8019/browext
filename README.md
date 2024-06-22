@@ -16,6 +16,8 @@ Press the extension and select the part of the screen for which you want to get 
 
 > styles.css: CSS file for styling the extension.
 
+>app.py: Server file for object detection of images 
+
 ## How to use
 
 ### Step 1: Clone the repository
